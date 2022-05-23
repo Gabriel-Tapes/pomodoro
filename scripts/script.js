@@ -5,6 +5,7 @@ const cronometro = {
     minuto: 0,
     segundo: 0,
 };
+const audio = document.querySelector("audio");
 let idIntervalo, idChecked, sessao;
 sessao = -1;
 let identificador = 0;
@@ -17,7 +18,6 @@ const aumentar = (id) => {
     } else {
         document.getElementById(id).innerText = inputTempo + 1;
     }
-
 }
 
 const diminuir = (id) => {
@@ -36,6 +36,49 @@ const construirCheck = (nSessoes, sessoes) => {
     }
 }
 
+const abrirModal = () => {
+    let mensagem = `
+        Tempo de ${document.getElementById("identificador").textContent} Esgotado! Clique em Continuar para continuar ou em Terminar para voltar ao início.
+    `;
+
+    document.getElementById("mensagem-modal").textContent = mensagem;
+    document.getElementById("modal").showModal();
+
+    audio.volume = 0.2;
+    audio.play();
+
+    identificador = 1 ? identificador == 0 : 0;
+}
+
+const fimPomodoro = () => {
+    let mensagem = `Tempo esgotado! Clique em Terminar para voltar ao início ou em Reiniciar para reiniciar`;
+
+    document.getElementById("reiniciar").classList.remove("hidden");
+
+    document.getElementById("continuar").classList.add("hidden");
+
+    document.getElementById("mensagem-modal").textContent = mensagem;
+    document.querySelector("dialog").showModal();
+}
+
+const fecharModal = () => {
+    document.getElementById("modal").close();
+    document.getElementById("play").classList.remove("hidden");
+    document.getElementById("pause").classList.add("hidden");
+
+    audio.load();
+    iniciar();
+}
+
+const reiniciar = () => {
+    sessao = -1;
+    iniciar();
+    document.querySelector("dialog").close();
+
+    document.getElementById("reiniciar").classList.add("hidden");
+    document.getElementById("continuar").classList.remove("hidden");
+}
+
 const timer = () => {
     idIntervalo = setInterval(() => {
         cronometro.minuto = parseInt(cronometro.tempo / 60, 10);
@@ -47,12 +90,8 @@ const timer = () => {
         cronometro.display.textContent = cronometro.minuto + ":" + cronometro.segundo;
 
         if (--cronometro.tempo === -2) {
-            alert("Tempo esgotado!");
-            identificador = 1 ? identificador == 0 : 0;
-            document.getElementById("play").classList.remove("hidden");
-            document.getElementById("pause").classList.add("hidden");
-            iniciar();
             clearInterval(idIntervalo);
+            abrirModal();
         }
     }, 1000);
 }
@@ -61,11 +100,14 @@ const pausa = () => {
     const pausa = parseInt(document.getElementById("pausa").innerText);
     cronometro.tempo = pausa * 60;
     cronometro.display.classList.add("pausa");
+
     document.getElementById(sessao).classList.remove("checkedTrabalho");
-    document.getElementById(sessao).classList.add("chekedPausa");
-    document.getElementById("identificador").textContent = "Pausa";
-    document.getElementById("identificador").classList.add("pausa");
     document.getElementById("identificador").classList.remove("trabalho");
+
+    document.getElementById(sessao).classList.add("chekedPausa");
+    document.getElementById("identificador").classList.add("pausa");
+
+    document.getElementById("identificador").textContent = "Pausa";
 
     construirTimer(cronometro.tempo);
 }
@@ -74,16 +116,17 @@ const trabalho = () => {
     const trabalho = parseInt(document.getElementById("trabalho").innerText);
     cronometro.tempo = trabalho * 60;
     if (++sessao >= cronometro.vezes) {
-        alert("Terminado! Clique em Ok para voltar ao início.");
-        clearInterval(idIntervalo);
-        voltar();
+        fimPomodoro();
     } else {
         cronometro.display.classList.remove("pausa");
+
         document.getElementById(sessao).classList.remove("checkedPausa");
-        document.getElementById(sessao).classList.add("chekedTrabalho");
-        document.getElementById("identificador").textContent = "Estudo";
-        document.getElementById("identificador").classList.add("trabalho");
         document.getElementById("identificador").classList.remove("pausa");
+
+        document.getElementById(sessao).classList.add("chekedTrabalho");
+        document.getElementById("identificador").classList.add("trabalho");
+
+        document.getElementById("identificador").textContent = "Estudo";
         construirTimer();
     }
 }
@@ -148,6 +191,7 @@ const voltar = () => {
     cronometro.tempo = 0;
     identificador = 0;
     sessao = -1;
+    audio.load();
 
     mostrarTelaInicial();
 
@@ -159,6 +203,10 @@ const voltar = () => {
 
     document.getElementById("play").classList.remove("hidden");
     document.getElementById("pause").classList.add("hidden");
+
+    document.querySelector("dialog").close();
+    document.getElementById("reiniciar").classList.add("hidden");
+    document.getElementById("continuar").classList.remove("hidden");
 }
 
 const verifica = (elemento) => {

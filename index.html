@@ -53,12 +53,13 @@
                     <p>Sessões </p>
                 </div>
             </div>
+            <!--Modais-->
         </div>
         <!-- Construção da página do Cronômetro -->
         <div class="cronometro hidden" id="cronometro-container">
             <div class="circulo-fora">
                 <div class="circulo-dentro" id="cronometro">
-
+                    
                 </div>
             </div>
             <div class="aside">
@@ -79,7 +80,19 @@
         <button onclick="iniciar()" class="iniciar" id="iniciar">
             Iniciar
         </button>
-
+        <!-- Modal -->
+        <dialog id="modal">
+            <div class="modal">
+                <p id="mensagem-modal"></p>
+                
+                <div id="botoes-modal">
+                    <button id="terminar" onclick="voltar()">Terminar</button>
+                    <button id="reiniciar" class="hidden" onclick="reiniciar()">Reiniciar</button>
+                    <button id="continuar" onclick="fecharModal()">Continuar</button>
+                </div>
+            </div>
+            <audio src="./media/alarm.mp3" loop>Alarme</audio>
+        </dialog>
     </main>
     <script src="./scripts/script.js"></script>
 </body>
