@@ -67,6 +67,7 @@ header button:hover {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
     margin: 10px;
 }
 
@@ -241,14 +242,14 @@ i {
     background-color: #3C4262;
 }
 
-.aside .n-sessoes .chekedTrabalho {
+.aside .n-sessoes .checkedTrabalho {
     background-color: #219653;
     color: #219653;
     font-size: 40px;
     box-shadow: 0px 0px 10px #219644e0;
 }
 
-.aside .n-sessoes .chekedPausa {
+.aside .n-sessoes .checkedPausa {
     background-color: #F2C94C;
     color: #f2c84c;
     font-size: 40px;
@@ -314,7 +315,7 @@ dialog button:hover {
     justify-content: space-around;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 700px) {
     header {
         margin: 10px 0 0 0;
         flex-direction: column;

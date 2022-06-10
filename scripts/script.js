@@ -1,37 +1,33 @@
 const cronometro = {
-    display: document.getElementById("cronometro"),
-    vezes: 0,
-    tempo: 0,
-    minuto: 0,
-    segundo: 0,
-};
+        display: document.querySelector("cronometro"),
+        vezes: 0,
+        tempo: 0,
+        minuto: 0,
+        segundo: 0,
+    };
+
 const audio = document.querySelector("audio");
-let idIntervalo, idChecked, sessao;
+
+let idIntervalo, idChecked, sessao, identificador;
+
 sessao = -1;
-let identificador = 0;
+identificador = 0;
 
 const aumentar = (id) => {
-    let inputTempo = parseInt(document.getElementById(id).innerText);
+    const inputTempo = document.getElementById(id);
 
-    if (id == "sessoes" && inputTempo === 50) {
-        document.getElementById(id).innerText = inputTempo;
-    } else {
-        document.getElementById(id).innerText = inputTempo + 1;
-    }
+    inputTempo.innerText = inputTempo.innerText < 100 ? parseInt(inputTempo.innerText) + 1 : inputTempo.innerText;
 }
 
 const diminuir = (id) => {
-    let inputTempo = document.getElementById(id).innerText;
-    if (inputTempo > 1) {
-        inputTempo = parseInt(inputTempo) - 1;
-    }
-    document.getElementById(id).innerText = inputTempo;
+    const inputTempo = document.getElementById(id);
+
+    inputTempo.innerText = inputTempo.innerText > 1 ? parseInt(inputTempo.innerText) - 1 : inputTempo.innerText;
 }
 
 const construirCheck = (nSessoes, sessoes) => {
-    nSessoes.innerHTML = "";
     for (let i = 0; i < sessoes; i++) {
-        check = `<div id="${i}"> </div>`
+        check = `<div class="check" id="${i}"> </div>`
         nSessoes.innerHTML += check;
     }
 }
@@ -41,8 +37,8 @@ const abrirModal = () => {
         Tempo de ${document.getElementById("identificador").textContent} Esgotado! Clique em Continuar para continuar ou em Terminar para voltar ao início.
     `;
 
-    document.getElementById("mensagem-modal").textContent = mensagem;
-    document.getElementById("modal").showModal();
+    document.querySelector("#mensagem-modal").textContent = mensagem;
+    document.querySelector("#modal").showModal();
 
     audio.volume = 0.2;
     audio.play();
@@ -50,33 +46,40 @@ const abrirModal = () => {
     identificador = 1 ? identificador == 0 : 0;
 }
 
-const fimPomodoro = () => {
-    let mensagem = `Tempo esgotado! Clique em Terminar para voltar ao início ou em Reiniciar para reiniciar`;
-
-    document.getElementById("reiniciar").classList.remove("hidden");
-
-    document.getElementById("continuar").classList.add("hidden");
-
-    document.getElementById("mensagem-modal").textContent = mensagem;
-    document.querySelector("dialog").showModal();
-}
-
 const fecharModal = () => {
-    document.getElementById("modal").close();
-    document.getElementById("play").classList.remove("hidden");
-    document.getElementById("pause").classList.add("hidden");
+    document.querySelector("#modal").close();
+
+    document.querySelector("#play").classList.remove("hidden");
+
+    document.querySelector("#pause").classList.add("hidden");
 
     audio.load();
-    iniciar();
+
+    alternar();
 }
 
 const reiniciar = () => {
     sessao = -1;
+
+    document.querySelectorAll(".checkedTrabalho").forEach(el => el.parentNode.removeChild(el));
+
     iniciar();
     document.querySelector("dialog").close();
 
     document.getElementById("reiniciar").classList.add("hidden");
     document.getElementById("continuar").classList.remove("hidden");
+}
+
+const fimPomodoro = () => {
+    let mensagem = `Tempo esgotado! Clique em Terminar para voltar ao início ou em Reiniciar para reiniciar`;
+
+    document.querySelector("#reiniciar").classList.remove("hidden");
+
+    document.querySelector("#continuar").classList.add("hidden");
+
+    document.querySelector("#mensagem-modal").textContent = mensagem;
+
+    document.querySelector("dialog").showModal();
 }
 
 const timer = () => {
@@ -99,56 +102,52 @@ const timer = () => {
 const pausa = () => {
     const pausa = parseInt(document.getElementById("pausa").innerText);
     cronometro.tempo = pausa * 60;
+
     cronometro.display.classList.add("pausa");
 
-    document.getElementById(sessao).classList.remove("checkedTrabalho");
-    document.getElementById("identificador").classList.remove("trabalho");
+    document.querySelector('#identificador').classList.add("pausa");
+    document.querySelector('#identificador').textContent = "Pausa";
 
-    document.getElementById(sessao).classList.add("chekedPausa");
-    document.getElementById("identificador").classList.add("pausa");
+    document.querySelectorAll('.checkedTrabalho').forEach(el => el.classList.add('checkedPausa'));
 
-    document.getElementById("identificador").textContent = "Pausa";
-
-    construirTimer(cronometro.tempo);
+    construirTimer();
 }
 
 const trabalho = () => {
     const trabalho = parseInt(document.getElementById("trabalho").innerText);
     cronometro.tempo = trabalho * 60;
+
     if (++sessao >= cronometro.vezes) {
         fimPomodoro();
     } else {
         cronometro.display.classList.remove("pausa");
 
-        document.getElementById(sessao).classList.remove("checkedPausa");
-        document.getElementById("identificador").classList.remove("pausa");
+        document.querySelector("#identificador").classList.remove("pausa");
+        document.querySelector("#identificador").textContent = "Estudo";
 
-        document.getElementById(sessao).classList.add("chekedTrabalho");
-        document.getElementById("identificador").classList.add("trabalho");
+        document.getElementById(sessao).classList.add("checkedTrabalho");
 
-        document.getElementById("identificador").textContent = "Estudo";
+        document.querySelectorAll(".checkedTrabalho").forEach(el => el.classList.remove('checkedPausa'));
+
+
         construirTimer();
     }
 }
 
 const alternar = () => {
-    if (identificador) {
-        pausa();
-    } else {
-        trabalho();
-    }
+    if (identificador) pausa();
+    else trabalho();
 }
-
 const play = () => {
-    document.getElementById("play").classList.add("hidden");
-    document.getElementById("pause").classList.remove("hidden");
+    document.querySelector("#play").classList.add("hidden");
+    document.querySelector("#pause").classList.remove("hidden");
 
     timer();
 }
 
 const pause = () => {
-    document.getElementById("play").classList.remove("hidden");
-    document.getElementById("pause").classList.add("hidden");
+    document.querySelector("#play").classList.remove("hidden");
+    document.querySelector("#pause").classList.add("hidden");
 
     clearInterval(idIntervalo);
 }
@@ -164,49 +163,52 @@ const construirTimer = () => {
 }
 
 const esconderTelaInicial = () => {
-    document.getElementById("tempo-container").classList.add("hidden");
-    document.getElementById("cronometro-container").classList.remove("hidden");
-    document.getElementById("botao-inicio").classList.remove("hidden");
-    document.getElementById("iniciar").classList.add("hidden");
+    document.querySelector("#tempo-container").classList.add("hidden");
+    document.querySelector("#cronometro-container").classList.remove("hidden");
+    document.querySelector("#botao-inicio").classList.remove("hidden");
+    document.querySelector("#iniciar").classList.add("hidden");
 }
 
 const mostrarTelaInicial = () => {
-    document.getElementById("tempo-container").classList.remove("hidden");
-    document.getElementById("cronometro-container").classList.add("hidden");
-    document.getElementById("botao-inicio").classList.add("hidden");
-    document.getElementById("iniciar").classList.remove("hidden");
+    document.querySelector("#tempo-container").classList.remove("hidden");
+    document.querySelector("#cronometro-container").classList.add("hidden");
+    document.querySelector("#botao-inicio").classList.add("hidden");
+    document.querySelector("#iniciar").classList.remove("hidden");
 }
 
 const iniciar = () => {
-    const sessoes = parseInt(document.getElementById("sessoes").innerText);
-    const nSessoes = document.getElementById("n-sessoes");
-    cronometro.vezes = parseInt(document.getElementById("sessoes").innerText);
+    const sessoes = parseInt(document.querySelector("#sessoes").innerText);
+    const nSessoes = document.querySelector("#n-sessoes");
+    cronometro.vezes = parseInt(document.querySelector("#sessoes").innerText);
 
     esconderTelaInicial();
     construirCheck(nSessoes, sessoes);
     alternar();
 }
-
-const voltar = () => {
+const zerarValores = () => {
     cronometro.tempo = 0;
     identificador = 0;
     sessao = -1;
     audio.load();
+}
+
+
+const voltar = () => {
+    zerarValores();
 
     mostrarTelaInicial();
 
-    for (let i = 0; i < cronometro.vezes; i++) {
-        document.getElementById(i).remove();
-    }
+    document.querySelectorAll(".check").forEach(check => check.remove());
+
     clearInterval(idIntervalo);
     cronometro.display.textContent = "";
 
-    document.getElementById("play").classList.remove("hidden");
-    document.getElementById("pause").classList.add("hidden");
+    document.querySelector("#play").classList.remove("hidden");
+    document.querySelector("#pause").classList.add("hidden");
 
     document.querySelector("dialog").close();
-    document.getElementById("reiniciar").classList.add("hidden");
-    document.getElementById("continuar").classList.remove("hidden");
+    document.querySelector("#reiniciar").classList.add("hidden");
+    document.querySelector("#continuar").classList.remove("hidden");
 }
 
 const verifica = (elemento) => {
@@ -221,9 +223,7 @@ const verifica = (elemento) => {
         elemento.innerText = 1;
     } else if (isNaN(valor)) {
         elemento.innerText = padrao[elemento.id];
-    } else if (elemento.id == "sessoes" && valor > 50) {
-        elemento.innerText = 50;
-    } else if (elemento.innerText > 1000) {
-        elemento.innerText = 1000;
+    } else if (elemento.innerText > 100) {
+        elemento.innerText = 100;
     }
 }
