@@ -1,17 +1,12 @@
 const cronometro = {
-        display: document.querySelector("cronometro"),
-        vezes: 0,
+        display: document.querySelector("#cronometro"),
+        repeticoes: 0,
         tempo: 0,
         minuto: 0,
         segundo: 0,
+        intervalo: 0,
+        sessao: -1
     };
-
-const audio = document.querySelector("audio");
-
-let idIntervalo, idChecked, sessao, identificador;
-
-sessao = -1;
-identificador = 0;
 
 const aumentar = (id) => {
     const inputTempo = document.getElementById(id);
@@ -27,12 +22,12 @@ const diminuir = (id) => {
 
 const construirCheck = (nSessoes, sessoes) => {
     for (let i = 0; i < sessoes; i++) {
-        check = `<div class="check" id="${i}"> </div>`
-        nSessoes.innerHTML += check;
+        nSessoes.innerHTML += `<div class="check" id="${i}"> </div>`;
     }
 }
 
 const abrirModal = () => {
+    const audio = document.querySelector('audio');
     let mensagem = `
         Tempo de ${document.getElementById("identificador").textContent} Esgotado! Clique em Continuar para continuar ou em Terminar para voltar ao início.
     `;
@@ -42,25 +37,19 @@ const abrirModal = () => {
 
     audio.volume = 0.2;
     audio.play();
-
-    identificador = 1 ? identificador == 0 : 0;
 }
 
 const fecharModal = () => {
     document.querySelector("#modal").close();
+    document.querySelector('audio').load();
 
     document.querySelector("#play").classList.remove("hidden");
-
     document.querySelector("#pause").classList.add("hidden");
-
-    audio.load();
 
     alternar();
 }
 
 const reiniciar = () => {
-    sessao = -1;
-
     document.querySelectorAll(".checkedTrabalho").forEach(el => el.parentNode.removeChild(el));
 
     iniciar();
@@ -71,19 +60,17 @@ const reiniciar = () => {
 }
 
 const fimPomodoro = () => {
-    let mensagem = `Tempo esgotado! Clique em Terminar para voltar ao início ou em Reiniciar para reiniciar`;
+    let mensagem = `Estudo terminado! Clique em Terminar para voltar ao início ou em Reiniciar para reiniciar`;
 
     document.querySelector("#reiniciar").classList.remove("hidden");
-
     document.querySelector("#continuar").classList.add("hidden");
 
     document.querySelector("#mensagem-modal").textContent = mensagem;
-
     document.querySelector("dialog").showModal();
 }
 
 const timer = () => {
-    idIntervalo = setInterval(() => {
+    cronometro.intervalo = setInterval(() => {
         cronometro.minuto = parseInt(cronometro.tempo / 60, 10);
         cronometro.segundo = parseInt(cronometro.tempo % 60, 10);
 
@@ -93,7 +80,10 @@ const timer = () => {
         cronometro.display.textContent = cronometro.minuto + ":" + cronometro.segundo;
 
         if (--cronometro.tempo === -2) {
-            clearInterval(idIntervalo);
+            clearInterval(cronometro.intervalo);
+            
+            localStorage.identificador = localStorage.identificador == 1 ? 0 : 1;
+
             abrirModal();
         }
     }, 1000);
@@ -117,7 +107,7 @@ const trabalho = () => {
     const trabalho = parseInt(document.getElementById("trabalho").innerText);
     cronometro.tempo = trabalho * 60;
 
-    if (++sessao >= cronometro.vezes) {
+    if (++cronometro.sessao >= cronometro.repeticoes) {
         fimPomodoro();
     } else {
         cronometro.display.classList.remove("pausa");
@@ -125,17 +115,16 @@ const trabalho = () => {
         document.querySelector("#identificador").classList.remove("pausa");
         document.querySelector("#identificador").textContent = "Estudo";
 
-        document.getElementById(sessao).classList.add("checkedTrabalho");
+        document.getElementById(cronometro.sessao).classList.add("checkedTrabalho");
 
         document.querySelectorAll(".checkedTrabalho").forEach(el => el.classList.remove('checkedPausa'));
-
 
         construirTimer();
     }
 }
 
 const alternar = () => {
-    if (identificador) pausa();
+    if (parseInt(localStorage.identificador)) pausa();
     else trabalho();
 }
 const play = () => {
@@ -164,22 +153,26 @@ const construirTimer = () => {
 
 const esconderTelaInicial = () => {
     document.querySelector("#tempo-container").classList.add("hidden");
+    document.querySelector("#iniciar").classList.add("hidden");
+
     document.querySelector("#cronometro-container").classList.remove("hidden");
     document.querySelector("#botao-inicio").classList.remove("hidden");
-    document.querySelector("#iniciar").classList.add("hidden");
 }
 
 const mostrarTelaInicial = () => {
     document.querySelector("#tempo-container").classList.remove("hidden");
+    document.querySelector("#iniciar").classList.remove("hidden");
+
     document.querySelector("#cronometro-container").classList.add("hidden");
     document.querySelector("#botao-inicio").classList.add("hidden");
-    document.querySelector("#iniciar").classList.remove("hidden");
 }
 
 const iniciar = () => {
     const sessoes = parseInt(document.querySelector("#sessoes").innerText);
     const nSessoes = document.querySelector("#n-sessoes");
-    cronometro.vezes = parseInt(document.querySelector("#sessoes").innerText);
+    cronometro.repeticoes = parseInt(document.querySelector("#sessoes").innerText);
+
+    localStorage.setItem('identificador', 0);
 
     esconderTelaInicial();
     construirCheck(nSessoes, sessoes);
@@ -187,9 +180,9 @@ const iniciar = () => {
 }
 const zerarValores = () => {
     cronometro.tempo = 0;
-    identificador = 0;
-    sessao = -1;
-    audio.load();
+    cronometro.sessao = -1;
+    document.querySelector('audio').load();
+    localStorage.clear();
 }
 
 
@@ -200,7 +193,7 @@ const voltar = () => {
 
     document.querySelectorAll(".check").forEach(check => check.remove());
 
-    clearInterval(idIntervalo);
+    clearInterval(cronometro.intervalo);
     cronometro.display.textContent = "";
 
     document.querySelector("#play").classList.remove("hidden");
