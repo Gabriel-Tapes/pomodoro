@@ -192,7 +192,7 @@ h2 {
     margin-left: 50px;
 }
 
-.aside h1.trabalho {
+.aside h1.estudo {
     font-size: 40px;
     color: #219653;
 }
@@ -242,7 +242,7 @@ i {
     background-color: #3C4262;
 }
 
-.aside .n-sessoes .checkedTrabalho {
+.aside .n-sessoes .checkedEstudo {
     background-color: #219653;
     color: #219653;
     font-size: 40px;

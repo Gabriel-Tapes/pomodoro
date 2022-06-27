@@ -4,9 +4,16 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
         <link rel="stylesheet" type="text/css" href="./styles/style.css">
+
         <script src="https://kit.fontawesome.com/b9daf60078.js" crossorigin="anonymous"></script>
-        <script src="./scripts/script.js" defer></script>
+
+        <script src="./scripts/index.js" defer></script>
+        <script src="./scripts/inputs.js" defer></script>
+        <script src="./scripts/cronometro.js" defer></script>
+        <script src="./scripts/modal.js" defer></script>
+
         <title>Pomodoro</title>
     </head>
 
@@ -20,12 +27,12 @@
             <div class="tempo-container" id="tempo-container">
                 <div class="bloco">
                     <div class="botoes">
-                        <button type="button" onclick="aumentar('trabalho')" class="botao"><i class="fa-solid fa-circle-up"></i></button>
-                        <button type="button" onclick="diminuir('trabalho')" class="botao"><i class="fa-solid fa-circle-down"></i></button>
+                        <button type="button" onclick="aumentar('estudo')" class="botao"><i class="fa-solid fa-circle-up"></i></button>
+                        <button type="button" onclick="diminuir('estudo')" class="botao"><i class="fa-solid fa-circle-down"></i></button>
                     </div>
                     <div class="tempo">
                         <div class="label">
-                            <h2 id="trabalho" onblur="verifica(this)" contenteditable>25</h2>
+                            <h2 id="estudo" onblur="verifica(this)" contenteditable>25</h2>
                         </div>
                         <p>Estudo</p>
                     </div>
@@ -54,17 +61,19 @@
                         <p>Sessões </p>
                     </div>
                 </div>
-                <!--Modais-->
             </div>
+            <button onclick="iniciarPomodoro()" class="iniciar" id="iniciar">
+                Iniciar
+            </button>
             <!-- Construção da página do Cronômetro -->
             <div class="cronometro hidden" id="cronometro-container">
                 <div class="circulo-fora">
-                    <div class="circulo-dentro" id="cronometro">
+                    <div class="circulo-dentro pausa" id="cronometro">
                         
                     </div>
                 </div>
                 <div class="aside">
-                    <h1 id="identificador" class="trabalho">
+                    <h1 id="identificador" class="estudo pausa">
 
                     </h1>
                     <div class="n-sessoes" id="n-sessoes">
@@ -78,9 +87,6 @@
                     </button>
                 </div>
             </div>
-            <button onclick="iniciar()" class="iniciar" id="iniciar">
-                Iniciar
-            </button>
             <!-- Modal -->
             <dialog id="modal">
                 <div class="modal">
